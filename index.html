@@ -173,6 +173,19 @@
       return;
     }
 
+    // Demo checkout (no Stripe yet)
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+    alert(
+      'Redirecting to checkout...\n\n' +
+      'Items: ' + cart.length + '\n' +
+      'Total: $' + total
+    );
+
+    // Reset cart after demo checkout
+    cart = [];
+  }
+
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
