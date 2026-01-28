@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flora & Foam</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #f4f7f4, #ffffff);
+      color: #243524;
+    }
+    header {
+      padding: 4rem 1.5rem;
+      text-align: center;
+      background: radial-gradient(circle at top, #dff0e1, #f7fbf7);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 3rem;
+      font-weight: 600;
+      letter-spacing: -1px;
+    }
+    header p {
+      font-size: 1.2rem;
+      opacity: 0.85;
+      margin-top: 0.8rem;
+    }
+    section {
+      padding: 4rem 1.5rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      margin: 0.8rem 0 0.4rem;
+      font-weight: 600;
+    }
+    .card p {
+      font-size: 0.95rem;
+      opacity: 0.85;
+    }
+    .price {
+      font-weight: 600;
+      margin: 1rem 0;
+      font-size: 1.1rem;
+    }
+    button {
+      width: 100%;
+      background: linear-gradient(135deg, #4f8a5b, #2f6e4f);
+      color: white;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    button:hover { opacity: 0.9; }
+    .about {
+      text-align: center;
+      max-width: 700px;
+      margin: auto;
+      font-size: 1.05rem;
+      opacity: 0.9;
+    }
+    footer {
+      background: #1f3325;
+      color: white;
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.9rem;
+    }
+    .checkout-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 1rem 1.4rem;
+      border-radius: 50px;
+      font-weight: 600;
+      width: auto;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Flora & Foam</h1>
+  <p>Modern soaps & plants for calm, creative living</p>
+</header>
+
+<section>
+  <h2>Signature Soaps</h2>
+  <div class="products">
+    <div class="card">
+      <h3>Lavender Calm</h3>
+      <p>A minimalist handmade soap infused with lavender oils.</p>
+      <div class="price">$8</div>
+      <button onclick="addToCart('Lavender Calm', 8)">Add to Cart</button>
+    </div>
+    <div class="card">
+      <h3>Citrus Studio</h3>
+      <p>Fresh citrus notes designed for modern routines.</p>
+      <div class="price">$7</div>
+      <button onclick="addToCart('Citrus Studio', 7)">Add to Cart</button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Curated Plants</h2>
+  <div class="products">
+    <div class="card">
+      <h3>Peace Lily</h3>
+      <p>Elegant indoor greenery with minimal care.</p>
+      <div class="price">$15</div>
+      <button onclick="addToCart('Peace Lily', 15)">Add to Cart</button>
+    </div>
+    <div class="card">
+      <h3>Succulent Set</h3>
+      <p>A trio of sculptural plants for desks and shelves.</p>
+      <div class="price">$18</div>
+      <button onclick="addToCart('Succulent Set', 18)">Add to Cart</button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Our Philosophy</h2>
+  <div class="about">
+    <p>Flora & Foam blends natural self-care with modern design. Our soaps and plants are crafted and curated to elevate everyday spaces — available both online and locally.</p>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Flora & Foam · Designed for modern living</p>
+</footer>
+
+<script>
+  // Basic cart state
+  let cart = [];
+
+  function addToCart(name, price) {
+    cart.push({ name, price });
+    alert(name + ' added to cart');
+  }
+
+  async function checkout() {
+    if (cart.length === 0) {
+      alert('Your cart is empty');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: cart })
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url; // REAL Stripe Checkout
+      } else {
+        alert('Checkout failed. Please try again.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Network error during checkout');
+    }
+  }
+
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+    alert(
+      'Redirecting to Stripe Checkout...\n\n' +
+      'Total: $' + total + '\n\n' +
+      'Demo mode: connect a backend + Stripe keys to go live.'
+    );
+
+    // Demo-only redirect
+    // Stripe Checkout requires a backend to generate a real session URL
+    // For now, we simulate checkout success without redirecting
+    alert('Checkout complete (demo). Order received!');
+    cart = [];
+  }
+</script>
+
+<button class="checkout-btn" onclick="checkout()">Checkout</button>
+
+</body>
+</html>
